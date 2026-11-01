@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import ru.skypro.homework.constants.WebConstants;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
+import ru.skypro.homework.service.CommentService;
 
 import javax.validation.Valid;
 
@@ -29,7 +32,10 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/ads")
 @Tag(name = "Комментарии")
+@RequiredArgsConstructor
 public class CommentController {
+
+    private final CommentService commentService;
 
     @Operation(summary = "Получение комментариев объявления")
     @ApiResponse(responseCode = "200", description = "OK",
@@ -38,7 +44,7 @@ public class CommentController {
     @ApiResponse(responseCode = "404", description = "Not found")
     @GetMapping("/{id}/comments")
     public ResponseEntity<Comments> getComments(@PathVariable Integer id) {
-        return ResponseEntity.ok(new Comments());
+        return ResponseEntity.ok(commentService.getComments(id));
     }
 
     @Operation(summary = "Добавление комментария к объявлению")
@@ -48,8 +54,9 @@ public class CommentController {
     @ApiResponse(responseCode = "404", description = "Not found")
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> addComment(@PathVariable Integer id,
-                                              @Valid @RequestBody CreateOrUpdateComment createOrUpdateComment) {
-        return ResponseEntity.ok(new Comment());
+                                              @Valid @RequestBody CreateOrUpdateComment createOrUpdateComment,
+                                              Authentication authentication) {
+        return ResponseEntity.ok(commentService.addComment(id, createOrUpdateComment, authentication.getName()));
     }
 
     @Operation(summary = "Удаление комментария")
@@ -59,7 +66,9 @@ public class CommentController {
     @ApiResponse(responseCode = "404", description = "Not found")
     @DeleteMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Integer adId,
-                                              @PathVariable Integer commentId) {
+                                              @PathVariable Integer commentId,
+                                              Authentication authentication) {
+        commentService.deleteComment(adId, commentId, authentication);
         return ResponseEntity.ok().build();
     }
 
@@ -72,7 +81,9 @@ public class CommentController {
     @PatchMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Comment> updateComment(@PathVariable Integer adId,
                                                  @PathVariable Integer commentId,
-                                                 @Valid @RequestBody CreateOrUpdateComment createOrUpdateComment) {
-        return ResponseEntity.ok(new Comment());
+                                                 @Valid @RequestBody CreateOrUpdateComment createOrUpdateComment,
+                                                 Authentication authentication) {
+        return ResponseEntity.ok(
+                commentService.updateComment(adId, commentId, createOrUpdateComment, authentication));
     }
 }

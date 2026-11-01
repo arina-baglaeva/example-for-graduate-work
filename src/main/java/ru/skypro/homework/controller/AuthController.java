@@ -31,10 +31,8 @@ public class AuthController {
     @ApiResponse(responseCode = "401", description = "Unauthorized")
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody Login login) {
-        if (authService.login(login.getUsername(), login.getPassword())) {
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        authService.login(login.getUsername(), login.getPassword());
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Регистрация пользователя", tags = "Регистрация")
