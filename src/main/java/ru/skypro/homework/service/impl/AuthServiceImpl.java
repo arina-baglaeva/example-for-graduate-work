@@ -1,47 +1,53 @@
 package ru.skypro.homework.service.impl;
 
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.dto.Role;
+import ru.skypro.homework.entity.UserEntity;
+import ru.skypro.homework.mapper.UserMapper;
+import ru.skypro.homework.security.SecurityUser;
 import ru.skypro.homework.service.AuthService;
 
+/**
+ * Вход и регистрация через {@link UserDetailsManager}, пароли хранятся в виде BCrypt-хеша.
+ */
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final UserDetailsManager manager;
     private final PasswordEncoder encoder;
+    private final UserMapper userMapper;
 
-    public AuthServiceImpl(UserDetailsManager manager,
-                           PasswordEncoder passwordEncoder) {
-        this.manager = manager;
-        this.encoder = passwordEncoder;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
-            return false;
+    public void login(String userName, String password) {
+        if (!manager.userExists(userName)
+                || !encoder.matches(password, manager.loadUserByUsername(userName).getPassword())) {
+            throw new BadCredentialsException("Invalid username or password");
         }
-        UserDetails userDetails = manager.loadUserByUsername(userName);
-        return encoder.matches(password, userDetails.getPassword());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean register(Register register) {
         if (manager.userExists(register.getUsername())) {
             return false;
         }
-        manager.createUser(
-                User.builder()
-                        .passwordEncoder(this.encoder::encode)
-                        .password(register.getPassword())
-                        .username(register.getUsername())
-                        .roles(register.getRole().name())
-                        .build());
+        UserEntity user = userMapper.toEntity(register);
+        user.setPassword(encoder.encode(register.getPassword()));
+        if (user.getRole() == null) {
+            user.setRole(Role.USER);
+        }
+        manager.createUser(new SecurityUser(user));
         return true;
     }
-
 }

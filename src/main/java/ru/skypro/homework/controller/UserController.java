@@ -5,8 +5,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +22,7 @@ import ru.skypro.homework.constants.WebConstants;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
+import ru.skypro.homework.service.UserService;
 
 import javax.validation.Valid;
 
@@ -30,14 +33,20 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/users")
 @Tag(name = "Пользователи")
+@RequiredArgsConstructor
 public class UserController {
+
+    private final UserService userService;
 
     @Operation(summary = "Обновление пароля")
     @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad Request")
     @ApiResponse(responseCode = "401", description = "Unauthorized")
     @ApiResponse(responseCode = "403", description = "Forbidden")
     @PostMapping("/set_password")
-    public ResponseEntity<Void> setPassword(@Valid @RequestBody NewPassword newPassword) {
+    public ResponseEntity<Void> setPassword(@Valid @RequestBody NewPassword newPassword,
+                                            Authentication authentication) {
+        userService.setPassword(authentication.getName(), newPassword);
         return ResponseEntity.ok().build();
     }
 
@@ -46,8 +55,8 @@ public class UserController {
             content = @Content(schema = @Schema(implementation = User.class)))
     @ApiResponse(responseCode = "401", description = "Unauthorized")
     @GetMapping("/me")
-    public ResponseEntity<User> getUser() {
-        return ResponseEntity.ok(new User());
+    public ResponseEntity<User> getUser(Authentication authentication) {
+        return ResponseEntity.ok(userService.getUser(authentication.getName()));
     }
 
     @Operation(summary = "Обновление информации об авторизованном пользователе")
@@ -55,8 +64,9 @@ public class UserController {
             content = @Content(schema = @Schema(implementation = UpdateUser.class)))
     @ApiResponse(responseCode = "401", description = "Unauthorized")
     @PatchMapping("/me")
-    public ResponseEntity<UpdateUser> updateUser(@Valid @RequestBody UpdateUser updateUser) {
-        return ResponseEntity.ok(new UpdateUser());
+    public ResponseEntity<UpdateUser> updateUser(@Valid @RequestBody UpdateUser updateUser,
+                                                 Authentication authentication) {
+        return ResponseEntity.ok(userService.updateUser(authentication.getName(), updateUser));
     }
 
     @Operation(summary = "Обновление аватара авторизованного пользователя")
