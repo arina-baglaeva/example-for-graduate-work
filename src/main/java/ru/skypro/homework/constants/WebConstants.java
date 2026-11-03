@@ -10,6 +10,11 @@ public final class WebConstants {
      */
     public static final String FRONTEND_URL = "http://localhost:3000";
 
+    /**
+     * Начало пути, по которому фронтенд получает картинки.
+     */
+    public static final String IMAGE_URL_PREFIX = "/images/";
+
     private WebConstants() {
     }
 }
