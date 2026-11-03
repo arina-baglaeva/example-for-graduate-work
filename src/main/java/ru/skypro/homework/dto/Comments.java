@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Список комментариев с их количеством.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -7,6 +7,9 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
+/**
+ * Данные для создания или изменения объявления.
+ */
 @Data
 @Schema(description = "Создание или обновление объявления")
 public class CreateOrUpdateAd {

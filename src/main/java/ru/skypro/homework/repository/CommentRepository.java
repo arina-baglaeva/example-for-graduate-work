@@ -6,6 +6,9 @@ import ru.skypro.homework.entity.CommentEntity;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Доступ к таблице comments.
+ */
 public interface CommentRepository extends JpaRepository<CommentEntity, Integer> {
 
     List<CommentEntity> findAllByAdIdOrderByCreatedAtDesc(Integer adId);

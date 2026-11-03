@@ -6,6 +6,9 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/**
+ * Текст нового или изменённого комментария.
+ */
 @Data
 @Schema(description = "Создание или обновление комментария")
 public class CreateOrUpdateComment {

@@ -5,6 +5,9 @@ import lombok.Data;
 
 import javax.validation.constraints.Size;
 
+/**
+ * Логин и пароль для входа.
+ */
 @Data
 @Schema(description = "Данные для входа")
 public class Login {

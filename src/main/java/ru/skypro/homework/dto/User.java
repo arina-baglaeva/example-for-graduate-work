@@ -3,6 +3,9 @@ package ru.skypro.homework.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+/**
+ * Профиль пользователя.
+ */
 @Data
 @Schema(description = "Пользователь")
 public class User {

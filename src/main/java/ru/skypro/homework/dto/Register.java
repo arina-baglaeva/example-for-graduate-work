@@ -7,6 +7,9 @@ import ru.skypro.homework.constants.ValidationConstants;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+/**
+ * Данные нового пользователя для регистрации.
+ */
 @Data
 @Schema(description = "Данные для регистрации")
 public class Register {

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.Ad;
 import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
@@ -14,6 +15,7 @@ import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.security.AccessChecker;
 import ru.skypro.homework.service.AdService;
+import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
 
 /**
@@ -27,6 +29,7 @@ public class AdServiceImpl implements AdService {
     private final AdMapper adMapper;
     private final UserService userService;
     private final AccessChecker accessChecker;
+    private final ImageService imageService;
 
     /**
      * {@inheritDoc}
@@ -42,9 +45,10 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     @Transactional
-    public Ad addAd(CreateOrUpdateAd createOrUpdateAd, String email) {
+    public Ad addAd(CreateOrUpdateAd createOrUpdateAd, MultipartFile image, String email) {
         AdEntity ad = adMapper.toEntity(createOrUpdateAd);
         ad.setAuthor(userService.getUserEntity(email));
+        ad.setImage(imageService.save(image));
         return adMapper.toAd(adRepository.save(ad));
     }
 
@@ -66,6 +70,7 @@ public class AdServiceImpl implements AdService {
         AdEntity ad = getAdEntity(id);
         accessChecker.checkCanModify(ad.getAuthor(), authentication);
         adRepository.delete(ad);
+        imageService.delete(ad.getImage());
     }
 
     /**
@@ -87,6 +92,19 @@ public class AdServiceImpl implements AdService {
     @Transactional(readOnly = true)
     public Ads getMyAds(String email) {
         return adMapper.toAds(adRepository.findAllByAuthorEmail(email));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public byte[] updateImage(Integer id, MultipartFile image, Authentication authentication) {
+        AdEntity ad = getAdEntity(id);
+        accessChecker.checkCanModify(ad.getAuthor(), authentication);
+        ad.setImage(imageService.replace(image, ad.getImage()));
+        adRepository.save(ad);
+        return imageService.load(ad.getImage());
     }
 
     /**
