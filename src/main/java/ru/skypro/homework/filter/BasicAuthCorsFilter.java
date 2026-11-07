@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Разрешает фронтенду передавать данные Basic-авторизации в CORS-запросах.
+ */
 @Component
 public class BasicAuthCorsFilter extends OncePerRequestFilter {
 

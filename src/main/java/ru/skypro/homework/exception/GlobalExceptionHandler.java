@@ -32,8 +32,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<Void> handleInvalidPassword(InvalidPasswordException e) {
+    @ExceptionHandler({InvalidPasswordException.class, InvalidImageException.class})
+    public ResponseEntity<Void> handleBadRequest(RuntimeException e) {
+        log.warn(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

@@ -58,7 +58,8 @@ public class AdController {
     public ResponseEntity<Ad> addAd(@Valid @RequestPart("properties") CreateOrUpdateAd properties,
                                     @RequestPart("image") MultipartFile image,
                                     Authentication authentication) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adService.addAd(properties, authentication.getName()));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(adService.addAd(properties, image, authentication.getName()));
     }
 
     @Operation(summary = "Получение информации об объявлении")
@@ -114,7 +115,8 @@ public class AdController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<byte[]> updateImage(@PathVariable Integer id,
-                                              @RequestPart("image") MultipartFile image) {
-        return ResponseEntity.ok(new byte[0]);
+                                              @RequestPart("image") MultipartFile image,
+                                              Authentication authentication) {
+        return ResponseEntity.ok(adService.updateImage(id, image, authentication));
     }
 }

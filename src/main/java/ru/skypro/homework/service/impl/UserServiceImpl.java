@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
@@ -12,6 +13,7 @@ import ru.skypro.homework.exception.InvalidPasswordException;
 import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
+import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
 
 /**
@@ -24,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ImageService imageService;
 
     /**
      * {@inheritDoc}
@@ -55,6 +58,17 @@ public class UserServiceImpl implements UserService {
             throw new InvalidPasswordException();
         }
         user.setPassword(passwordEncoder.encode(newPassword.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void updateUserImage(String email, MultipartFile image) {
+        UserEntity user = getUserEntity(email);
+        user.setImage(imageService.replace(image, user.getImage()));
         userRepository.save(user);
     }
 

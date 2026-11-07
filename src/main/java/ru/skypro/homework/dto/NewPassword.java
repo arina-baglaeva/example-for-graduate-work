@@ -5,6 +5,9 @@ import lombok.Data;
 
 import javax.validation.constraints.Size;
 
+/**
+ * Текущий и новый пароль для смены пароля.
+ */
 @Data
 @Schema(description = "Смена пароля")
 public class NewPassword {

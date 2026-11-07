@@ -1,5 +1,6 @@
 package ru.skypro.homework.service;
 
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
@@ -33,6 +34,14 @@ public interface UserService {
      * @throws ru.skypro.homework.exception.InvalidPasswordException если текущий пароль неверен
      */
     void setPassword(String email, NewPassword newPassword);
+
+    /**
+     * Сохраняет новый аватар, прежний файл удаляется.
+     *
+     * @param email логин пользователя
+     * @param image файл картинки
+     */
+    void updateUserImage(String email, MultipartFile image);
 
     /**
      * @param email логин пользователя

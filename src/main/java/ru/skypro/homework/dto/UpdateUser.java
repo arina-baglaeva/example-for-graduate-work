@@ -7,6 +7,9 @@ import ru.skypro.homework.constants.ValidationConstants;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+/**
+ * Изменяемые данные профиля пользователя.
+ */
 @Data
 @Schema(description = "Обновление данных пользователя")
 public class UpdateUser {

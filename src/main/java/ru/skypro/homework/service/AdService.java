@@ -1,6 +1,7 @@
 package ru.skypro.homework.service;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.Ad;
 import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
@@ -18,13 +19,14 @@ public interface AdService {
     Ads getAllAds();
 
     /**
-     * Создаёт объявление от имени пользователя.
+     * Создаёт объявление с картинкой от имени пользователя.
      *
      * @param createOrUpdateAd заголовок, цена и описание
+     * @param image            картинка объявления
      * @param email            логин автора
      * @return созданное объявление с id
      */
-    Ad addAd(CreateOrUpdateAd createOrUpdateAd, String email);
+    Ad addAd(CreateOrUpdateAd createOrUpdateAd, MultipartFile image, String email);
 
     /**
      * @param id id объявления
@@ -58,6 +60,17 @@ public interface AdService {
      * @return только объявления этого пользователя
      */
     Ads getMyAds(String email);
+
+    /**
+     * Заменяет картинку объявления. Доступно автору и администратору.
+     *
+     * @param id             id объявления
+     * @param image          новая картинка
+     * @param authentication текущий пользователь
+     * @return содержимое новой картинки
+     * @throws org.springframework.security.access.AccessDeniedException если нет прав
+     */
+    byte[] updateImage(Integer id, MultipartFile image, Authentication authentication);
 
     /**
      * @param id id объявления
